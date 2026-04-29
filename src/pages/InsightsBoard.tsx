@@ -211,6 +211,15 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 		enabled: isExpanded,
 	});
 
+	const { data: scripts = [], isLoading: scriptsLoading } = useQuery({
+		queryKey: ['scripts', analysis?._id],
+		queryFn: async () => {
+			const res = await fetch(`${BACKEND_URL}/api/analysis/${analysis._id}/scripts`);
+			return res.json();
+		},
+		enabled: !!analysis?._id,
+	});
+
 	return (
 		<Card
 			className={`overflow-hidden border-border bg-card rounded-xl transition-all duration-200 ${isExpanded ? 'shadow-sm' : 'hover:bg-muted/20'}`}
@@ -336,6 +345,53 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 										No OMEGA X analysis found for this run. Execute pipeline in
 										the Command Center.
 									</p>
+								</div>
+							</div>
+						)}
+
+						{/* VIRAL SCRIPTS SECTION */}
+						{scripts.length > 0 && (
+							<div className='space-y-4'>
+								<div className='flex items-center gap-2'>
+									<Sparkles
+										size={14}
+										className='text-primary'
+									/>
+									<h5 className='text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60'>
+										Synthesized Script Concepts
+									</h5>
+								</div>
+
+								<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+									{scripts.map((script: any, i: number) => (
+										<Card
+											key={i}
+											className='bg-muted/5 border-border/60 rounded-xl overflow-hidden hover:border-primary/20 transition-all'
+										>
+											<div className='p-2 bg-muted/20 border-b border-border flex justify-between items-center px-4'>
+												<span className='text-[9px] font-black uppercase text-primary/60'>
+													Script #{i + 1}
+												</span>
+												<Badge
+													variant='outline'
+													className='text-[8px] h-4 font-black uppercase'
+												>
+													Score: {script.viralityScore}
+												</Badge>
+											</div>
+											<div className='p-4 space-y-3'>
+												<p className='text-xs font-bold leading-tight'>
+													{script.topic}
+												</p>
+												<div className='p-2 rounded bg-primary/5 border border-primary/10 text-[10px] font-bold text-primary italic'>
+													"{script.hook}"
+												</div>
+												<p className='text-[11px] text-muted-foreground line-clamp-3 leading-relaxed'>
+													{script.script}
+												</p>
+											</div>
+										</Card>
+									))}
 								</div>
 							</div>
 						)}
