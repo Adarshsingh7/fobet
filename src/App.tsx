@@ -102,6 +102,7 @@ export default function App() {
 						directUrls: urls,
 						username: usernames.length > 0 ? usernames : urls,
 						resultsLimit: 100,
+						includeTranscript: true,
 					}),
 				},
 			);
