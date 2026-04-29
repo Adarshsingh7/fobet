@@ -459,7 +459,7 @@ export default function App() {
 									/>
 									<Route
 										path='/recommendations'
-										element={<StrategyLab agentStates={agentStates} />}
+										element={<StrategyLab />}
 									/>
 									<Route
 										path='/export'

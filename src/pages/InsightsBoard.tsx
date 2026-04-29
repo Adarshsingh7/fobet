@@ -350,7 +350,17 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 						)}
 
 						{/* VIRAL SCRIPTS SECTION */}
-						{scripts.length > 0 && (
+						{scriptsLoading ? (
+							<div className='py-8 flex flex-col items-center justify-center gap-2 text-muted-foreground/40'>
+								<Loader2
+									className='animate-spin'
+									size={20}
+								/>
+								<p className='text-[10px] font-bold uppercase tracking-widest'>
+									Loading Scripts...
+								</p>
+							</div>
+						) : scripts.length > 0 ? (
 							<div className='space-y-4'>
 								<div className='flex items-center gap-2'>
 									<Sparkles
@@ -394,7 +404,7 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 									))}
 								</div>
 							</div>
-						)}
+						) : null}
 
 						{/* NODES SECTION */}
 						<div className='space-y-4'>
