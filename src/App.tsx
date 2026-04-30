@@ -27,6 +27,7 @@ import AgentCenter from './pages/AgentCenter';
 import InsightsBoard from './pages/InsightsBoard';
 import StrategyLab from './pages/StrategyLab';
 import Archive from './pages/Archive';
+import PasswordGuard from './components/PasswordGuard';
 
 import {
 	AGENT_DEFS,
@@ -287,195 +288,197 @@ export default function App() {
 	];
 
 	return (
-		<TooltipProvider>
-			<div className='dark flex h-screen bg-background text-foreground font-sans overflow-hidden antialiased selection:bg-primary/20'>
-				{/* SIDEBAR */}
-				<aside className='w-64 border-r border-border bg-card/30 flex flex-col z-20 backdrop-blur-md'>
-					<div className='h-14 flex items-center px-5 border-b border-border/40 gap-3'>
-						<div className='flex h-7 w-7 items-center justify-center rounded-lg bg-primary shadow-sm'>
-							<Terminal
-								className='text-primary-foreground stroke-[2.5px]'
-								size={14}
-							/>
-						</div>
-						<div className='flex flex-col'>
-							<span className='text-[14px] font-bold tracking-tight text-foreground leading-none'>
-								ReelOS
-							</span>
-							<span className='text-[10px] font-medium text-muted-foreground/50 uppercase tracking-widest mt-0.5'>
-								v2.0 Neural
-							</span>
-						</div>
-					</div>
-
-					<nav className='flex-1 px-3 py-6 space-y-1'>
-						{sidebarItems.map((item) => (
-							<button
-								key={item.id}
-								onClick={() =>
-									navigate(item.id === 'dashboard' ? '/' : `/${item.id}`)
-								}
-								className={`w-full group flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 active:scale-95 ${
-									activeTab === item.id
-										? 'bg-secondary text-secondary-foreground shadow-sm'
-										: 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-								}`}
-							>
-								<item.icon
-									size={16}
-									className={`${activeTab === item.id ? 'text-primary' : 'opacity-60 group-hover:opacity-100 transition-opacity'}`}
+		<PasswordGuard>
+			<TooltipProvider>
+				<div className='dark flex h-screen bg-background text-foreground font-sans overflow-hidden antialiased selection:bg-primary/20'>
+					{/* SIDEBAR */}
+					<aside className='w-64 border-r border-border bg-card/30 flex flex-col z-20 backdrop-blur-md'>
+						<div className='h-14 flex items-center px-5 border-b border-border/40 gap-3'>
+							<div className='flex h-7 w-7 items-center justify-center rounded-lg bg-primary shadow-sm'>
+								<Terminal
+									className='text-primary-foreground stroke-[2.5px]'
+									size={14}
 								/>
-								{item.label}
-								{item.id === 'agents' && doneCount > 0 && (
-									<Badge
-										variant='secondary'
-										className='ml-auto h-5 px-1.5 text-[10px] bg-primary/10 text-primary border-none rounded-full'
-									>
-										{doneCount}
-									</Badge>
-								)}
-							</button>
-						))}
-					</nav>
-
-					<div className='p-4 m-3 rounded-xl bg-card border border-border/60 space-y-4'>
-						<div className='space-y-2'>
-							<div className='flex justify-between items-center text-[11px] font-medium'>
-								<span className='text-muted-foreground'>Session Progress</span>
-								<span className='text-foreground tabular-nums'>
-									{Math.round((doneCount / 6) * 100)}%
+							</div>
+							<div className='flex flex-col'>
+								<span className='text-[14px] font-bold tracking-tight text-foreground leading-none'>
+									ReelOS
+								</span>
+								<span className='text-[10px] font-medium text-muted-foreground/50 uppercase tracking-widest mt-0.5'>
+									v2.0 Neural
 								</span>
 							</div>
-							<Progress
-								value={(doneCount / 6) * 100}
-								className='h-1 bg-muted rounded-full'
-							/>
-						</div>
-						<div className='flex items-center gap-2'>
-							<div className='relative flex h-2 w-2'>
-								<span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-40'></span>
-								<Circle className='relative inline-flex h-2 w-2 fill-emerald-500 text-emerald-500' />
-							</div>
-							<span className='text-[11px] font-medium text-muted-foreground'>
-								System Online
-							</span>
-						</div>
-					</div>
-				</aside>
-
-				{/* MAIN CONTENT AREA */}
-				<div className='flex-1 flex flex-col relative overflow-hidden'>
-					<div className='absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none' />
-
-					<header className='h-14 border-b border-border bg-background/50 backdrop-blur-md flex items-center justify-between px-6 z-10'>
-						<div className='flex items-center gap-2.5'>
-							<span className='text-[12px] font-medium text-muted-foreground'>
-								Home
-							</span>
-							<ChevronRight
-								size={14}
-								className='text-muted-foreground/30'
-							/>
-							<span className='text-[12px] font-semibold text-foreground capitalize tracking-tight'>
-								{activeTab}
-							</span>
 						</div>
 
-						<div className='flex items-center gap-2'>
-							<div className='flex items-center gap-1.5 mr-2'>
-								<Badge
-									variant='outline'
-									className='text-[11px] font-medium h-7 px-2.5 border-border rounded-lg bg-card/50'
+						<nav className='flex-1 px-3 py-6 space-y-1'>
+							{sidebarItems.map((item) => (
+								<button
+									key={item.id}
+									onClick={() =>
+										navigate(item.id === 'dashboard' ? '/' : `/${item.id}`)
+									}
+									className={`w-full group flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-200 active:scale-95 ${
+										activeTab === item.id
+											? 'bg-secondary text-secondary-foreground shadow-sm'
+											: 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+									}`}
 								>
-									<Activity
-										size={12}
-										className='mr-1.5 text-muted-foreground'
+									<item.icon
+										size={16}
+										className={`${activeTab === item.id ? 'text-primary' : 'opacity-60 group-hover:opacity-100 transition-opacity'}`}
 									/>
-									{reelCount}
-								</Badge>
-								{doneCount > 0 && (
-									<Badge className='text-[11px] font-medium h-7 px-2.5 bg-emerald-500/10 text-emerald-500 border-none rounded-lg'>
-										{doneCount} Analysis Ready
-									</Badge>
-								)}
-							</div>
-							<Separator
-								orientation='vertical'
-								className='h-4 mx-2'
-							/>
-							<Button
-								variant='ghost'
-								size='icon'
-								className='h-8 w-8 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all active:scale-90'
-								onClick={handleResetSession}
-							>
-								<Power size={15} />
-							</Button>
-						</div>
-					</header>
+									{item.label}
+									{item.id === 'agents' && doneCount > 0 && (
+										<Badge
+											variant='secondary'
+											className='ml-auto h-5 px-1.5 text-[10px] bg-primary/10 text-primary border-none rounded-full'
+										>
+											{doneCount}
+										</Badge>
+									)}
+								</button>
+							))}
+						</nav>
 
-					<main className='flex-1 overflow-y-auto scroll-smooth'>
-						<div className='max-w-5xl mx-auto p-8 lg:p-12 min-h-full'>
-							<div className='transition-all duration-300'>
-								<Routes>
-									<Route
-										path='/'
-										element={
-											<Dashboard
-												reelCount={reelCount}
-												doneCount={doneCount}
-												agentStates={agentStates}
-											/>
-										}
-									/>
-									<Route
-										path='/input'
-										element={
-											<ReelInput
-												reelInput={reelInput}
-												setReelInput={setReelInput}
-												startScraper={startScraper}
-												isScraping={isScraping}
-												scrapeProgress={scrapeProgress}
-												scrapeError={scrapeError}
-												scrapedData={scrapedData}
-											/>
-										}
-									/>
-									<Route
-										path='/agents'
-										element={
-											<AgentCenter
-												agentStates={agentStates}
-												runAgent={runAgent}
-												runAll={runAll}
-												reelInput={reelInput}
-											/>
-										}
-									/>
-									<Route
-										path='/insights'
-										element={<InsightsBoard agentStates={agentStates} />}
-									/>
-									<Route
-										path='/recommendations'
-										element={<StrategyLab />}
-									/>
-									<Route
-										path='/export'
-										element={
-											<Archive
-												reelInput={reelInput}
-												agentStates={agentStates}
-											/>
-										}
-									/>
-								</Routes>
+						<div className='p-4 m-3 rounded-xl bg-card border border-border/60 space-y-4'>
+							<div className='space-y-2'>
+								<div className='flex justify-between items-center text-[11px] font-medium'>
+									<span className='text-muted-foreground'>Session Progress</span>
+									<span className='text-foreground tabular-nums'>
+										{Math.round((doneCount / 6) * 100)}%
+									</span>
+								</div>
+								<Progress
+									value={(doneCount / 6) * 100}
+									className='h-1 bg-muted rounded-full'
+								/>
+							</div>
+							<div className='flex items-center gap-2'>
+								<div className='relative flex h-2 w-2'>
+									<span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-40'></span>
+									<Circle className='relative inline-flex h-2 w-2 fill-emerald-500 text-emerald-500' />
+								</div>
+								<span className='text-[11px] font-medium text-muted-foreground'>
+									System Online
+								</span>
 							</div>
 						</div>
-					</main>
+					</aside>
+
+					{/* MAIN CONTENT AREA */}
+					<div className='flex-1 flex flex-col relative overflow-hidden'>
+						<div className='absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none' />
+
+						<header className='h-14 border-b border-border bg-background/50 backdrop-blur-md flex items-center justify-between px-6 z-10'>
+							<div className='flex items-center gap-2.5'>
+								<span className='text-[12px] font-medium text-muted-foreground'>
+									Home
+								</span>
+								<ChevronRight
+									size={14}
+									className='text-muted-foreground/30'
+								/>
+								<span className='text-[12px] font-semibold text-foreground capitalize tracking-tight'>
+									{activeTab}
+								</span>
+							</div>
+
+							<div className='flex items-center gap-2'>
+								<div className='flex items-center gap-1.5 mr-2'>
+									<Badge
+										variant='outline'
+										className='text-[11px] font-medium h-7 px-2.5 border-border rounded-lg bg-card/50'
+									>
+										<Activity
+											size={12}
+											className='mr-1.5 text-muted-foreground'
+										/>
+										{reelCount}
+									</Badge>
+									{doneCount > 0 && (
+										<Badge className='text-[11px] font-medium h-7 px-2.5 bg-emerald-500/10 text-emerald-500 border-none rounded-lg'>
+											{doneCount} Analysis Ready
+										</Badge>
+									)}
+								</div>
+								<Separator
+									orientation='vertical'
+									className='h-4 mx-2'
+								/>
+								<Button
+									variant='ghost'
+									size='icon'
+									className='h-8 w-8 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all active:scale-90'
+									onClick={handleResetSession}
+								>
+									<Power size={15} />
+								</Button>
+							</div>
+						</header>
+
+						<main className='flex-1 overflow-y-auto scroll-smooth'>
+							<div className='max-w-5xl mx-auto p-8 lg:p-12 min-h-full'>
+								<div className='transition-all duration-300'>
+									<Routes>
+										<Route
+											path='/'
+											element={
+												<Dashboard
+													reelCount={reelCount}
+													doneCount={doneCount}
+													agentStates={agentStates}
+												/>
+											}
+										/>
+										<Route
+											path='/input'
+											element={
+												<ReelInput
+													reelInput={reelInput}
+													setReelInput={setReelInput}
+													startScraper={startScraper}
+													isScraping={isScraping}
+													scrapeProgress={scrapeProgress}
+													scrapeError={scrapeError}
+													scrapedData={scrapedData}
+												/>
+											}
+										/>
+										<Route
+											path='/agents'
+											element={
+												<AgentCenter
+													agentStates={agentStates}
+													runAgent={runAgent}
+													runAll={runAll}
+													reelInput={reelInput}
+												/>
+											}
+										/>
+										<Route
+											path='/insights'
+											element={<InsightsBoard agentStates={agentStates} />}
+										/>
+										<Route
+											path='/recommendations'
+											element={<StrategyLab />}
+										/>
+										<Route
+											path='/export'
+											element={
+												<Archive
+													reelInput={reelInput}
+													agentStates={agentStates}
+												/>
+											}
+										/>
+									</Routes>
+								</div>
+							</div>
+						</main>
+					</div>
 				</div>
-			</div>
-		</TooltipProvider>
+			</TooltipProvider>
+		</PasswordGuard>
 	);
 }

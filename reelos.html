@@ -512,24 +512,91 @@
             );
         };
 
+        const PasswordGuard = ({ children }) => {
+            const [password, setPassword] = useState('');
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [error, setError] = useState(false);
+
+            useEffect(() => {
+                if (localStorage.getItem('site_auth') === 'test1234') {
+                    setIsAuthenticated(true);
+                }
+            }, []);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (password === 'test1234') {
+                    localStorage.setItem('site_auth', 'test1234');
+                    setIsAuthenticated(true);
+                } else {
+                    setError(true);
+                }
+            };
+
+            if (isAuthenticated) return children;
+
+            return (
+                <div style={{
+                    height: '100vh',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'var(--bg)',
+                    fontFamily: 'Outfit, sans-serif'
+                }}>
+                    <Card style={{ width: '380px', textAlign: 'center', padding: '40px' }} glow>
+                        <div style={{ fontSize: '40px', marginBottom: '20px' }}>🔒</div>
+                        <h1 style={{ fontSize: '24px', marginBottom: '10px', fontWeight: 700 }}>Secure Access</h1>
+                        <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '25px' }}>Enter the static password to access ReelOS.</p>
+                        
+                        <form onSubmit={handleSubmit}>
+                            <input
+                                type="password"
+                                placeholder="Enter Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    background: 'var(--surfaceUp)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '8px',
+                                    padding: '14px',
+                                    color: 'var(--text)',
+                                    fontSize: '14px',
+                                    marginBottom: '15px',
+                                    textAlign: 'center',
+                                    letterSpacing: '4px'
+                                }}
+                                autoFocus
+                            />
+                            {error && <div style={{ color: 'var(--red)', fontSize: '11px', marginBottom: '15px' }}>Invalid password. Try again.</div>}
+                            <Btn style={{ width: '100%', height: '45px' }}>Unlock Platform</Btn>
+                        </form>
+                    </Card>
+                </div>
+            );
+        };
+
         const App = () => {
             const [apiKey, setApiKey] = useState('');
             const [reelInput, setReelInput] = useState('');
             const [agentStates, setAgentStates] = useState({});
 
-            if (!apiKey) return <ApiKeyGate onKey={setApiKey} />;
+            if (!apiKey) return <PasswordGuard><ApiKeyGate onKey={setApiKey} /></PasswordGuard>;
 
             return (
-                <HashRouter>
-                    <MainLayout 
-                        apiKey={apiKey} 
-                        setApiKey={setApiKey}
-                        reelInput={reelInput}
-                        setReelInput={setReelInput}
-                        agentStates={agentStates}
-                        setAgentStates={setAgentStates}
-                    />
-                </HashRouter>
+                <PasswordGuard>
+                    <HashRouter>
+                        <MainLayout 
+                            apiKey={apiKey} 
+                            setApiKey={setApiKey}
+                            reelInput={reelInput}
+                            setReelInput={setReelInput}
+                            agentStates={agentStates}
+                            setAgentStates={setAgentStates}
+                        />
+                    </HashRouter>
+                </PasswordGuard>
             );
         };
 
