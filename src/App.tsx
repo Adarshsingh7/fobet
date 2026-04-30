@@ -206,7 +206,7 @@ export default function App() {
 			const prompt = `CONTEXT:\n${reelInput}\n\nTASK: ${agent.systemPrompt}\n\nFORMAT: Provide a detailed JSON response matching the strategic goals of a ${agent.name}.`;
 
 			const response = await fetch(
-				`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${GEMINI_API_KEY}`,
+				`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${GEMINI_API_KEY}`,
 				{
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

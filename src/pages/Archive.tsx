@@ -248,10 +248,10 @@ export default function Archive({ reelInput, agentStates }: any) {
 												</div>
 												<div>
 													<p className='text-[11px] font-black uppercase tracking-tight'>
-														{new Date(run.timestamp).toLocaleDateString()}
+														{run.name || `Session ${new Date(run.timestamp).toLocaleDateString()}`}
 													</p>
 													<p className='text-[9px] font-medium text-muted-foreground opacity-50'>
-														{new Date(run.timestamp).toLocaleTimeString()}
+														{new Date(run.timestamp).toLocaleDateString()} @ {new Date(run.timestamp).toLocaleTimeString()}
 													</p>
 												</div>
 											</div>

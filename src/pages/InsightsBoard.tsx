@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
+import { Input } from '@/components/ui/input';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
 	Search,
 	Brain,
@@ -29,6 +30,9 @@ import {
 	Lightbulb,
 	Database,
 	AlertCircle,
+	Pencil,
+	Check,
+	X,
 } from 'lucide-react';
 import { AGENT_DEFS } from '../lib/constants';
 
@@ -193,6 +197,10 @@ export default function InsightsBoard({ agentStates }: any) {
 
 function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 	const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+	const queryClient = useQueryClient();
+	const [isEditing, setIsEditing] = useState(false);
+	const [newName, setNewName] = useState(run.name || '');
+
 	const { data: analysis, isLoading: analysisLoading } = useQuery({
 		queryKey: ['analysis', run._id],
 		queryFn: async () => {
@@ -220,6 +228,31 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 		enabled: !!analysis?._id,
 	});
 
+	const renameMutation = useMutation({
+		mutationFn: async (name: string) => {
+			const res = await fetch(`${BACKEND_URL}/api/runs/${run._id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name }),
+			});
+			if (!res.ok) throw new Error('Failed to rename run');
+			return res.json();
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['runs'] });
+			setIsEditing(false);
+		},
+	});
+
+	const handleRename = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (newName.trim() && newName !== run.name) {
+			renameMutation.mutate(newName);
+		} else {
+			setIsEditing(false);
+		}
+	};
+
 	return (
 		<Card
 			className={`overflow-hidden border-border bg-card rounded-xl transition-all duration-200 ${isExpanded ? 'shadow-sm' : 'hover:bg-muted/20'}`}
@@ -228,7 +261,7 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 				className='p-3 sm:p-4 flex items-center justify-between cursor-pointer group select-none'
 				onClick={onToggle}
 			>
-				<div className='flex items-center gap-4'>
+				<div className='flex items-center gap-4 flex-1 min-w-0'>
 					<div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted border border-border group-hover:bg-background transition-colors'>
 						<Calendar
 							size={18}
@@ -237,11 +270,61 @@ function RunInsightGroup({ run, isExpanded, onToggle }: any) {
 							}
 						/>
 					</div>
-					<div>
-						<h4 className='text-sm font-bold tracking-tight'>
-							{run.name ||
-								`Session ${new Date(run.timestamp).toLocaleDateString()}`}
-						</h4>
+					<div className='flex-1 min-w-0'>
+						{isEditing ? (
+							<div className='flex items-center gap-2' onClick={(e) => e.stopPropagation()}>
+								<Input
+									value={newName}
+									onChange={(e) => setNewName(e.target.value)}
+									className='h-8 text-sm font-bold bg-background'
+									autoFocus
+									onKeyDown={(e) => {
+										if (e.key === 'Enter') handleRename(e as any);
+										if (e.key === 'Escape') setIsEditing(false);
+									}}
+								/>
+								<Button
+									size='icon'
+									variant='ghost'
+									className='h-7 w-7 rounded-md text-emerald-500'
+									onClick={handleRename}
+									disabled={renameMutation.isPending}
+								>
+									{renameMutation.isPending ? <Loader2 size={12} className='animate-spin' /> : <Check size={14} />}
+								</Button>
+								<Button
+									size='icon'
+									variant='ghost'
+									className='h-7 w-7 rounded-md text-destructive'
+									onClick={(e) => {
+										e.stopPropagation();
+										setIsEditing(false);
+										setNewName(run.name || '');
+									}}
+								>
+									<X size={14} />
+								</Button>
+							</div>
+						) : (
+							<div className='flex items-center gap-2 group/title'>
+								<h4 className='text-sm font-bold tracking-tight truncate max-w-[200px] sm:max-w-[400px]'>
+									{run.name ||
+										`Session ${new Date(run.timestamp).toLocaleDateString()}`}
+								</h4>
+								<Button
+									size='icon'
+									variant='ghost'
+									className='h-6 w-6 opacity-0 group-hover/title:opacity-100 transition-opacity rounded-md'
+									onClick={(e) => {
+										e.stopPropagation();
+										setNewName(run.name || '');
+										setIsEditing(true);
+									}}
+								>
+									<Pencil size={12} className='text-muted-foreground' />
+								</Button>
+							</div>
+						)}
 						<div className='flex items-center gap-2 mt-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-tight'>
 							<span>
 								{new Date(run.timestamp).toLocaleTimeString([], {

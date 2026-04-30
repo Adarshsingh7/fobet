@@ -96,8 +96,8 @@ app.post('/api/analysis/:id/scripts', async (req, res) => {
       runId
     }));
 
-    // Delete existing scripts for this analysis if any (optional, or just append)
-    // await Script.deleteMany({ analysisId });
+    // Delete existing scripts for this analysis to ensure fresh generation
+    await Script.deleteMany({ analysisId });
     
     const result = await Script.insertMany(scriptsToInsert);
     res.status(201).json(result);
@@ -110,6 +110,16 @@ app.get('/api/analysis/:id/scripts', async (req, res) => {
   try {
     const scripts = await Script.find({ analysisId: req.params.id }).sort({ timestamp: -1 });
     res.json(scripts);
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.post('/api/analysis/:id/scripts/clear', async (req, res) => {
+  try {
+    const analysisId = req.params.id;
+    await Script.deleteMany({ analysisId });
+    res.json({ message: 'Scripts cleared' });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
