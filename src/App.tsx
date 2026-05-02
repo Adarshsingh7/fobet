@@ -101,8 +101,10 @@ export default function App() {
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						directUrls: urls,
-						username: usernames.length > 0 ? usernames : urls,
-						resultsLimit: 100,
+						// Use all URLs as fallback for username to ensure each is processed
+						username: usernames.length > 0 ? usernames : (urls.length > 0 ? urls : []),
+						// Set limit to exactly what's needed + small safety buffer (e.g. +2)
+						resultsLimit: usernames.length > 0 ? 100 : urls.length + 2,
 						includeTranscript: true,
 					}),
 				},

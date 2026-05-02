@@ -174,8 +174,10 @@ export default function ReelInput({
 	const [runName, setRunName] = useState('');
 
 	const handleScrape = () => {
-		const allUrls: string[] = [];
-		const allUsernames: string[] = [];
+		const urlSet = new Set<string>();
+		const usernameSet = new Set<string>();
+
+		const REEL_REGEX = /instagram\.com\/(reels?|p)\/([A-Za-z0-9_-]+)/;
 
 		Object.values(matrix)
 			.flat()
@@ -184,16 +186,28 @@ export default function ReelInput({
 				if (!trimmed) return;
 
 				if (trimmed.startsWith('http')) {
-					allUrls.push(trimmed);
+					// Safeguard: Only allow Reel/Post URLs, block Profile URLs
+					if (REEL_REGEX.test(trimmed)) {
+						urlSet.add(trimmed);
+					} else {
+						console.warn('Blocked non-reel URL:', trimmed);
+					}
 				} else if (trimmed.startsWith('reels/')) {
-					allUrls.push(`https://www.instagram.com/${trimmed}`);
-				} else {
-					allUsernames.push(trimmed);
+					urlSet.add(`https://www.instagram.com/${trimmed}`);
+				} else if (trimmed.startsWith('@') || !trimmed.includes('/')) {
+					// Safeguard: Basic username validation
+					const cleanUsername = trimmed.startsWith('@') ? trimmed.slice(1) : trimmed;
+					if (cleanUsername) usernameSet.add(cleanUsername);
 				}
 			});
 
-		if (allUrls.length > 0 || allUsernames.length > 0) {
-			startScraper(allUrls, allUsernames, runName);
+		const finalUrls = Array.from(urlSet);
+		const finalUsernames = Array.from(usernameSet);
+
+		if (finalUrls.length > 0 || finalUsernames.length > 0) {
+			startScraper(finalUrls, finalUsernames, runName);
+		} else {
+			alert('No valid Reel URLs or Usernames found. Profile URLs are blocked to prevent over-scraping.');
 		}
 	};
 
